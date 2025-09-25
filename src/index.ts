@@ -2,10 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import { UserModel } from "./db.js";
+import { JWT_PASSWORD } from "./config.js";
+import { userMiddleware } from "./middleware.js";
+
+const jwt_password = JWT_PASSWORD;
 
 const app = express();
-
-const JWT_PASSWORD = "abc123";
 
 app.use(express.json());
 app.get("/", (req, res) => {
@@ -47,7 +49,7 @@ app.post("/api/v1/signin", async (req, res) => {
       {
         id: existingUser._id,
       },
-      JWT_PASSWORD
+      jwt_password
     );
     res.json({
       token,
@@ -59,7 +61,10 @@ app.post("/api/v1/signin", async (req, res) => {
   }
 });
 
-app.get("/api/v1/signin", (req, res) => {});
+app.post("/api/v1/content", userMiddleware, (req, res) => {
+  //link,title,tags,userid
+  const { link, type } = req.body;
+});
 app.delete("/api/v1/signin", (req, res) => {});
 
 app.post("/api/v1/brain/share", (req, res) => {});
